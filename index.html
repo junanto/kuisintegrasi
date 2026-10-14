@@ -82,10 +82,15 @@
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
+            margin-top: 10px;
         }
 
         .btn:hover {
             opacity: 0.9;
+        }
+
+        .btn-retry {
+            background: var(--danger);
         }
 
         .quiz-header {
@@ -152,6 +157,16 @@
             font-weight: bold;
             color: var(--primary);
             margin: 10px 0;
+        }
+
+        .kkm-warning {
+            background-color: #fdf2f2;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
         }
 
         table {
@@ -232,10 +247,19 @@
             <h2>Kuis Selesai!</h2>
             <p>Terima kasih telah mengerjakan.</p>
             <div class="score-num" id="final-score">0</div>
+            
+            <!-- Tempat Peringatan KKM -->
+            <div id="kkm-alert-container"></div>
+
             <p id="final-details">Nilai Anda sedang dikirim...</p>
         </div>
 
         <div id="sending-status" class="loader"></div>
+
+        <!-- Tombol Ulangi Kuis (Muncul Jika Nilai < 70) -->
+        <div id="retry-container" class="hidden">
+            <button class="btn btn-retry" onclick="resetQuiz()">Ulangi Kuis</button>
+        </div>
 
         <div style="margin-top: 30px;">
             <h2>Peringkat / Leaderboard</h2>
@@ -268,7 +292,7 @@
         { level: "C2", q: "5. Mengapa integrasi konten antaraplikasi perkantoran diperlukan oleh pengguna?", options: ["A. Agar pengguna dapat menggunakan seluruh aplikasi secara bersamaan tanpa jeda", "B. Karena satu aplikasi saja sudah cukup untuk menyelesaikan semua jenis pekerjaan", "C. Karena ada kalanya pengguna memerlukan lebih dari satu aplikasi untuk suatu keperluan, misalnya laporan yang memuat diagram", "D. Agar ukuran file penyimpanan menjadi lebih kecil", "E. Untuk menghindari keharusan menggunakan komputer"], answer: 2 },
         { level: "C2", q: "6. Tempat penyimpanan sementara (buffer) pada sistem komputer yang digunakan untuk menampung objek saat perintah Cut atau Copy dijalankan disebut...", options: ["A. Direktori", "B. Clipboard", "C. Memory Card", "D. Flashdisk", "E. Register"], answer: 1 },
         { level: "C2", q: "7. Manakah di bawah ini yang merupakan contoh penerapan integrasi konten dalam Microsoft Office?", options: ["A. Menghubungkan Microsoft Word dengan jaringan internet global", "B. Data dari Microsoft Excel ditautkan dengan dokumen pada Microsoft Word dalam pembuatan surat", "C. Mengubah sistem operasi komputer dari Windows ke Linux", "D. Mengetik ulang seluruh data tabel dari Excel ke dalam PowerPoint", "E. Mencetak dokumen menggunakan mesin printer yang berbeda merek"], answer: 1 },
-        { level: "C2", q: "8. Perbedaan mendasar antara perintah Cut dan Copy dalam pengoperasian objek aplikasi perkantoran adalah...", options: ["A. Cut menyalin objek, sedangkan Copy menghapus objek", "B. Cut memindahkan objek dan menghapusnya dari asal (masuk ke clipboard), sedangkan Copy menyalin objek tanpa menghilangkan objek asalnya", "C. Cut hanya bisa untuk teks, sedangkan Copy hanya untuk gambar", "D. Copy menggunakan tombol Ctrl + X, sedangkan Cut menggunakan Ctrl + C", "E. Tidak ada perbedaan fungsi di antara keduanya"], answer: 1 },
+        { level: "C2", q: "8. Perbedaan mendasar antara perintah Cut dan Copy dalam pengoperasian objek aplikasi perkantoran adalah...", options: ["A. Cut menyalin objek, sedangkan Copy menghapus objek", "B. Cut memindahkan objek dan menghapusnya dari asal (masuk ke clipboard), sedangkan Copy menyalin objek tanpa menghilangkan objek asalnya", "C. Cut hanya bisa untuk teks, sedangkan Copy hanya untuk gambar", "D. Copy menggunakan Ctrl + X, sedangkan Cut menggunakan Ctrl + C", "E. Tidak ada perbedaan fungsi di antara keduanya"], answer: 1 },
         { level: "C2", q: "9. Pada fitur integrasi konten otomatis di Microsoft Word, ketika pengguna memilih menu Insert Chart, aplikasi apa yang secara otomatis akan ikut terbuka?", options: ["A. Microsoft PowerPoint", "B. Microsoft Access", "C. Microsoft Excel", "D. Microsoft Paint", "E. Google Chrome"], answer: 2 },
         { level: "C2", q: "10. Dalam konsep Object Linking, apa yang terjadi jika data sumber (source data) mengalami perubahan?", options: ["A. Objek yang terhubung di aplikasi lain tidak akan ikut berubah", "B. Aplikasi sumber akan tertutup secara otomatis", "C. Perubahan pada data sumber akan mengakibatkan perubahan pada objek yang dihubungkan", "D. File dokumen akan rusak dan korup", "E. Pengguna harus melakukan Copy-Paste ulang secara manual"], answer: 2 },
         { level: "C3", q: "11. Seorang staf administrasi ingin membuat laporan bulanan di Microsoft Word yang di dalamnya harus menyertakan diagram batang yang presisi dari data penjualan. Langkah paling efisien adalah...", options: ["A. Menggambar diagram secara manual menggunakan garis di Microsoft Word", "B. Mengetik ulang seluruh angka penjualan ke dalam bentuk teks biasa di Word", "C. Menggunakan fitur integrasi seperti menu Insert Chart atau menautkan data dari Microsoft Excel", "D. Mencetak lembar kerja Excel terlebih dahulu lalu menempelkannya menggunakan lem kertas", "E. Membatalkan pembuatan diagram karena menggunakan aplikasi berbeda"], answer: 2 },
@@ -280,7 +304,7 @@
         { level: "C3", q: "17. Jika seorang siswa membuka dua aplikasi sekaligus lalu membawa potongan tabel dari Excel ke Word menggunakan teknik Copy-Paste, konsep dasar apa yang sedang diterapkan?", options: ["A. Pemrograman berorientasi objek", "B. Integrasi konten antaraplikasi perkantoran", "C. Instalasi sistem operasi jaringan", "D. Perancangan arsitektur CPU", "E. Pengembangan bahasa compiler"], answer: 1 },
         { level: "C3", q: "18. Perusahaan X memiliki laporan keuangan utama di Excel yang sering direvisi setiap hari. Laporan tersebut harus disajikan dalam bentuk dokumen naratif di Word. Agar staf tidak perlu memperbarui grafik di Word secara manual setiap ada revisi, fitur apa yang harus dimanfaatkan?", options: ["A. Cut and Paste biasa", "B. Fasilitas Object Linking pada Microsoft Office", "C. Print Screen manual setiap jam", "D. Menulis ulang laporan dengan mesin ketik tradisional", "E. Mengubah file Word menjadi gambar JPG"], answer: 1 },
         { level: "C3", q: "19. Perintah penyalinan saat ini terinspirasi dari praktik tradisional memotong paragraf pada kertas menggunakan gunting. Fungsi fisik 'gunting' pada masa lalu kini digantikan oleh fungsi...", options: ["A. Perintah Cut atau kombinasi Ctrl + X", "B. Perintah Print atau kombinasi Ctrl + P", "C. Perintah Save As", "D. Menu Insert Chart", "E. Fungsi Object Linking"], answer: 0 },
-        { level: "C3", q: "20. Seorang siswa menggunakan Word Processor untuk isi laporan, Spreadsheet untuk grafik data, dan Presentation Slide untuk bahan seminar. Ketiga file ini digabungkan isinya ke dalam laporan akhir berbasis teks. Tindakan ini menunjukkan penguasaan terhadap...", options: ["A. Pembuatan bahasa pemrograman tingkat rendah", "B. Integrasi konten aplikasi perkantoran untuk menggabungkan berbagai konten dalam satu kesatuan tugas", "C. Perbaikan perangkat keras komputer yang rusak", "D. Pengamanan data dari serangan virus komputer", "E. Pengoperasian sistem operasi berbasis teks (CLI)"], answer: 1 }
+        { level: "C3", q: "20. Seorang siswa menggunakan Word Processor untuk isi laporan, Spreadsheet untuk grafik data, dan Presentation Slide untuk bahan seminar. Ketiga file ini digabungkan isinya ke dalam laporan akhir berbasis teks. Tindakan ini menunjukkan penguasaan terhadap...", options: ["A. Pemrograman bahasa pemrograman tingkat rendah", "B. Integrasi konten aplikasi perkantoran untuk menggabungkan berbagai konten dalam satu kesatuan tugas", "C. Perbaikan perangkat keras komputer yang rusak", "D. Pengamanan data dari serangan virus komputer", "E. Pengoperasian sistem operasi berbasis teks (CLI)"], answer: 1 }
     ];
 
     let currentQuestionIndex = 0;
@@ -344,9 +368,31 @@
         document.getElementById('screen-result').classList.remove('hidden');
         
         const percentage = Math.round((score / questions.length) * 100);
-        document.getElementById('final-score').innerText = percentage;
+        document.getElementById('final-score').innerText = percentage + "%";
+
+        // Cek KKM (70)
+        const alertContainer = document.getElementById('kkm-alert-container');
+        if (percentage < 70) {
+            alertContainer.innerHTML = `<div class="kkm-warning">Nilai Anda masih kurang dari KKM, silahkan ulangi kuis lagi</div>`;
+            document.getElementById('retry-container').classList.remove('hidden');
+        } else {
+            alertContainer.innerHTML = `<div style="color: var(--success); font-weight: bold; margin: 15px 0;">Selamat! Anda telah mencapai KKM.</div>`;
+        }
 
         sendDataToSheet(percentage);
+    }
+
+    function resetQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        selectedOption = null;
+        document.getElementById('screen-result').classList.add('hidden');
+        document.getElementById('retry-container').classList.add('hidden');
+        document.getElementById('kkm-alert-container').innerHTML = '';
+        document.getElementById('sending-status').style.display = 'block';
+        document.getElementById('final-details').innerText = "Nilai Anda sedang dikirim...";
+        document.getElementById('screen-quiz').classList.remove('hidden');
+        loadQuestion();
     }
 
     function sendDataToSheet(percentage) {
