@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif TIK - Bab 3 Integrasi Aplikasi Perkantoran</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #50e3c2;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px;
+            padding: 30px;
+            position: relative;
+        }
+
+        h1, h2 {
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            background: var(--light);
+            border: 2px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #edf2f7;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: #ebf8ff;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .score-num {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- SCREEN 1: IDENTITAS -->
+    <div id="screen-start">
+        <h1>Kuis TIK Kelas X</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 25px;">Materi: Bab 3 Integrasi Konten Aplikasi Perkantoran</p>
+        <form id="form-identity">
+            <div class="form-group">
+                <label for="nama">Nama Lengkap:</label>
+                <input type="text" id="nama" required placeholder="Masukkan nama Anda">
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" required placeholder="Contoh: X IPA 1">
+            </div>
+            <button type="submit" class="btn">Mulai Kuis</button>
+        </form>
+    </div>
+
+    <!-- SCREEN 2: KUIS -->
+    <div id="screen-quiz" class="hidden">
+        <div class="quiz-header">
+            <span class="badge" id="q-counter">Soal 1/20</span>
+            <span class="badge" id="q-level" style="background: #e67e22;">Level: C2</span>
+        </div>
+        <div class="question" id="q-text">Pertanyaan akan muncul di sini...</div>
+        <div class="options" id="q-options"></div>
+        <button id="btn-next" class="btn" onclick="nextQuestion()" disabled>Selanjutnya</button>
+    </div>
+
+    <!-- SCREEN 3: HASIL & LEADERBOARD -->
+    <div id="screen-result" class="hidden">
+        <div class="score-card">
+            <h2>Kuis Selesai!</h2>
+            <p>Terima kasih telah mengerjakan.</p>
+            <div class="score-num" id="final-score">0</div>
+            <p id="final-details">Nilai Anda sedang dikirim...</p>
+        </div>
+
+        <div id="sending-status" class="loader"></div>
+
+        <div style="margin-top: 30px;">
+            <h2>Peringkat / Leaderboard</h2>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Nilai</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="4" style="text-align:center;">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // GANTI URL DI BAWAH DENGAN URL WEB APP DEPLOYMENT GOOGLE APPS SCRIPT ANDA
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzpIN3sai_GAnThM9DCd011LdiAaRAmmROWn9pgTDzixfQ0avvKyG_HM-BRs74K-2uGCw/exec";
+
+    const questions = [
+        { level: "C2", q: "1. Perhatikan pernyataan berikut!\n1) Harus dibangun sendiri menggunakan bahasa pemrograman.\n2) Fitur-fiturnya sudah tersedia dan dapat langsung digunakan.\n3) Berupa kumpulan aplikasi untuk memudahkan pekerjaan perkantoran.\nKarakteristik yang tepat mengenai aplikasi perkantoran (office application) ditunjukkan oleh nomor...", options: ["A. 1 dan 2", "B. 1 dan 3", "C. 2 dan 3", "D. 1, 2, dan 3", "E. Semua benar"], answer: 2 },
+        { level: "C2", q: "2. Aplikasi perkantoran yang fitur utamanya digunakan untuk mengelola data dalam bentuk tabel dua dimensi (baris dan kolom) serta mempermudah perhitungan statistik adalah...", options: ["A. Word Processor", "B. Spreadsheet", "C. Presentation Slide", "D. Database Management", "E. Web Browser"], answer: 1 },
+        { level: "C2", q: "3. Apa fungsi utama dari aplikasi pembuat bahan presentasi (slide) dalam perkantoran?", options: ["A. Mengolah data angka secara statistik dan membuat diagram", "B. Membuat surat dan menyusun laporan teks", "C. Membuat slide presentasi dengan mudah, cepat, dan menarik", "D. Menyimpan basis data perusahaan secara terpusat", "E. Menghubungkan jaringan komputer antar-kantor"], answer: 2 },
+        { level: "C2", q: "4. Yang dimaksud dengan mengintegrasikan konten dalam aplikasi perkantoran adalah...", options: ["A. Menghapus data yang sudah tidak terpakai dari aplikasi", "B. Menyatukan beberapa objek, data, atau komponen untuk membentuk sesuatu yang utuh dan bermakna", "C. Membangun aplikasi baru menggunakan bahasa pemrograman tingkat tinggi", "D. Mengubah format file teks menjadi format audio", "E. Mengganti seluruh fungsi aplikasi pengolah kata dengan spreadsheet"], answer: 1 },
+        { level: "C2", q: "5. Mengapa integrasi konten antaraplikasi perkantoran diperlukan oleh pengguna?", options: ["A. Agar pengguna dapat menggunakan seluruh aplikasi secara bersamaan tanpa jeda", "B. Karena satu aplikasi saja sudah cukup untuk menyelesaikan semua jenis pekerjaan", "C. Karena ada kalanya pengguna memerlukan lebih dari satu aplikasi untuk suatu keperluan, misalnya laporan yang memuat diagram", "D. Agar ukuran file penyimpanan menjadi lebih kecil", "E. Untuk menghindari keharusan menggunakan komputer"], answer: 2 },
+        { level: "C2", q: "6. Tempat penyimpanan sementara (buffer) pada sistem komputer yang digunakan untuk menampung objek saat perintah Cut atau Copy dijalankan disebut...", options: ["A. Direktori", "B. Clipboard", "C. Memory Card", "D. Flashdisk", "E. Register"], answer: 1 },
+        { level: "C2", q: "7. Manakah di bawah ini yang merupakan contoh penerapan integrasi konten dalam Microsoft Office?", options: ["A. Menghubungkan Microsoft Word dengan jaringan internet global", "B. Data dari Microsoft Excel ditautkan dengan dokumen pada Microsoft Word dalam pembuatan surat", "C. Mengubah sistem operasi komputer dari Windows ke Linux", "D. Mengetik ulang seluruh data tabel dari Excel ke dalam PowerPoint", "E. Mencetak dokumen menggunakan mesin printer yang berbeda merek"], answer: 1 },
+        { level: "C2", q: "8. Perbedaan mendasar antara perintah Cut dan Copy dalam pengoperasian objek aplikasi perkantoran adalah...", options: ["A. Cut menyalin objek, sedangkan Copy menghapus objek", "B. Cut memindahkan objek dan menghapusnya dari asal (masuk ke clipboard), sedangkan Copy menyalin objek tanpa menghilangkan objek asalnya", "C. Cut hanya bisa untuk teks, sedangkan Copy hanya untuk gambar", "D. Copy menggunakan tombol Ctrl + X, sedangkan Cut menggunakan Ctrl + C", "E. Tidak ada perbedaan fungsi di antara keduanya"], answer: 1 },
+        { level: "C2", q: "9. Pada fitur integrasi konten otomatis di Microsoft Word, ketika pengguna memilih menu Insert Chart, aplikasi apa yang secara otomatis akan ikut terbuka?", options: ["A. Microsoft PowerPoint", "B. Microsoft Access", "C. Microsoft Excel", "D. Microsoft Paint", "E. Google Chrome"], answer: 2 },
+        { level: "C2", q: "10. Dalam konsep Object Linking, apa yang terjadi jika data sumber (source data) mengalami perubahan?", options: ["A. Objek yang terhubung di aplikasi lain tidak akan ikut berubah", "B. Aplikasi sumber akan tertutup secara otomatis", "C. Perubahan pada data sumber akan mengakibatkan perubahan pada objek yang dihubungkan", "D. File dokumen akan rusak dan korup", "E. Pengguna harus melakukan Copy-Paste ulang secara manual"], answer: 2 },
+        { level: "C3", q: "11. Seorang staf administrasi ingin membuat laporan bulanan di Microsoft Word yang di dalamnya harus menyertakan diagram batang yang presisi dari data penjualan. Langkah paling efisien adalah...", options: ["A. Menggambar diagram secara manual menggunakan garis di Microsoft Word", "B. Mengetik ulang seluruh angka penjualan ke dalam bentuk teks biasa di Word", "C. Menggunakan fitur integrasi seperti menu Insert Chart atau menautkan data dari Microsoft Excel", "D. Mencetak lembar kerja Excel terlebih dahulu lalu menempelkannya menggunakan lem kertas", "E. Membatalkan pembuatan diagram karena menggunakan aplikasi berbeda"], answer: 2 },
+        { level: "C3", q: "12. Jika seorang pengguna ingin menyalin sebuah gambar dari aplikasi pengolah kata ke lembar kerja presentasi tanpa menghilangkan gambar di dokumen asal, kombinasi tombol manakah yang harus ia gunakan secara berurutan?", options: ["A. Ctrl + X lalu Ctrl + V", "B. Ctrl + C lalu Ctrl + V", "C. Ctrl + C lalu Ctrl + X", "D. Ctrl + V lalu Ctrl + C", "E. Ctrl + X lalu Ctrl + C"], answer: 1 },
+        { level: "C3", q: "13. Andi sedang menyusun bahan presentasi di Microsoft PowerPoint dan ingin menampilkan tabel data keuangan yang bersumber dari Microsoft Excel. Agar data pada presentasi dapat memperbarui diri secara otomatis ketika file Excel diubah, teknik integrasi manakah yang paling tepat?", options: ["A. Teknik Cut-Paste manual", "B. Mengetik ulang data ke slide presentasi", "C. Teknik Object Linking", "D. Mengambil screenshot layar Excel lalu memasukkannya sebagai gambar mati", "E. Menyimpan file dalam bentuk PDF"], answer: 2 },
+        { level: "C3", q: "14. Seringkali pengguna melakukan Copy-Paste secara cepat antaraplikasi perkantoran. Berdasarkan materi, apa risiko utama yang sering terjadi jika teknik ini dilakukan tanpa kehati-hatian?", options: ["A. Komputer akan mengalami bluescreen seketika", "B. Menghasilkan teks atau data yang salah karena penulis lupa mengeditnya kembali", "C. Lisensi aplikasi perkantoran akan kedaluwarsa", "D. Kapasitas clipboard langsung habis selamanya", "E. Format huruf berubah menjadi bahasa Mandarin"], answer: 1 },
+        { level: "C3", q: "15. Sebuah dokumen laporan (destination document) disisipkan objek grafik menggunakan konsep Object Linking. Hubungan yang tepat antara kedua dokumen tersebut adalah...", options: ["A. Dokumen sumber dan dokumen tujuan berdiri sendiri tanpa ada kaitan data", "B. Dokumen tujuan bertindak sebagai pelayan bagi dokumen sumber", "C. Dokumen sumber menyajikan/membawa objek ke dokumen tujuan, dan perubahan data di sumber berdampak pada dokumen tujuan", "D. Dokumen tujuan mengirim balik virus ke dokumen sumber", "E. Dokumen sumber otomatis terhapus setelah di-link"], answer: 2 },
+        { level: "C3", q: "16. Ketika seorang pengguna menekan tombol kombinasi Ctrl + X pada sebuah paragraf di Microsoft Word, proses apa yang sedang terjadi di dalam sistem komputer?", options: ["A. Paragraf disalin ke clipboard dan dihapus dari posisi aslinya", "B. Paragraf digandakan menjadi dua di tempat yang sama", "C. Paragraf dikirim langsung ke printer untuk dicetak", "D. Paragraf diubah menjadi format tabel secara otomatis", "E. Membuka aplikasi lembar kerja secara otomatis"], answer: 0 },
+        { level: "C3", q: "17. Jika seorang siswa membuka dua aplikasi sekaligus lalu membawa potongan tabel dari Excel ke Word menggunakan teknik Copy-Paste, konsep dasar apa yang sedang diterapkan?", options: ["A. Pemrograman berorientasi objek", "B. Integrasi konten antaraplikasi perkantoran", "C. Instalasi sistem operasi jaringan", "D. Perancangan arsitektur CPU", "E. Pengembangan bahasa compiler"], answer: 1 },
+        { level: "C3", q: "18. Perusahaan X memiliki laporan keuangan utama di Excel yang sering direvisi setiap hari. Laporan tersebut harus disajikan dalam bentuk dokumen naratif di Word. Agar staf tidak perlu memperbarui grafik di Word secara manual setiap ada revisi, fitur apa yang harus dimanfaatkan?", options: ["A. Cut and Paste biasa", "B. Fasilitas Object Linking pada Microsoft Office", "C. Print Screen manual setiap jam", "D. Menulis ulang laporan dengan mesin ketik tradisional", "E. Mengubah file Word menjadi gambar JPG"], answer: 1 },
+        { level: "C3", q: "19. Perintah penyalinan saat ini terinspirasi dari praktik tradisional memotong paragraf pada kertas menggunakan gunting. Fungsi fisik 'gunting' pada masa lalu kini digantikan oleh fungsi...", options: ["A. Perintah Cut atau kombinasi Ctrl + X", "B. Perintah Print atau kombinasi Ctrl + P", "C. Perintah Save As", "D. Menu Insert Chart", "E. Fungsi Object Linking"], answer: 0 },
+        { level: "C3", q: "20. Seorang siswa menggunakan Word Processor untuk isi laporan, Spreadsheet untuk grafik data, dan Presentation Slide untuk bahan seminar. Ketiga file ini digabungkan isinya ke dalam laporan akhir berbasis teks. Tindakan ini menunjukkan penguasaan terhadap...", options: ["A. Pembuatan bahasa pemrograman tingkat rendah", "B. Integrasi konten aplikasi perkantoran untuk menggabungkan berbagai konten dalam satu kesatuan tugas", "C. Perbaikan perangkat keras komputer yang rusak", "D. Pengamanan data dari serangan virus komputer", "E. Pengoperasian sistem operasi berbasis teks (CLI)"], answer: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedOption = null;
+    let studentData = { nama: "", kelas: "" };
+
+    document.getElementById('form-identity').addEventListener('submit', function(e) {
+        e.preventDefault();
+        studentData.nama = document.getElementById('nama').value;
+        studentData.kelas = document.getElementById('kelas').value;
+        
+        document.getElementById('screen-start').classList.add('hidden');
+        document.getElementById('screen-quiz').classList.remove('hidden');
+        loadQuestion();
+    });
+
+    function loadQuestion() {
+        const q = questions[currentQuestionIndex];
+        document.getElementById('q-counter').innerText = `Soal ${currentQuestionIndex + 1}/${questions.length}`;
+        document.getElementById('q-level').innerText = `Level: ${q.level}`;
+        document.getElementById('q-text').innerText = q.q;
+        
+        const optionsContainer = document.getElementById('q-options');
+        optionsContainer.innerHTML = '';
+        selectedOption = null;
+        document.getElementById('btn-next').disabled = true;
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function selectOption(index, btnElement) {
+        selectedOption = index;
+        const allOptions = document.querySelectorAll('.option-btn');
+        allOptions.forEach(b => b.classList.remove('selected'));
+        btnElement.classList.add('selected');
+        document.getElementById('btn-next').disabled = false;
+    }
+
+    function nextQuestion() {
+        if (selectedOption === questions[currentQuestionIndex].answer) {
+            score++;
+        }
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('screen-quiz').classList.add('hidden');
+        document.getElementById('screen-result').classList.remove('hidden');
+        
+        const percentage = Math.round((score / questions.length) * 100);
+        document.getElementById('final-score').innerText = percentage;
+
+        sendDataToSheet(percentage);
+    }
+
+    function sendDataToSheet(percentage) {
+        const payload = {
+            action: "submit",
+            nama: studentData.nama,
+            kelas: studentData.kelas,
+            skor: score,
+            total: questions.length,
+            persentase: percentage
+        };
+
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            document.getElementById('sending-status').style.display = 'none';
+            document.getElementById('final-details').innerText = "Nilai Anda berhasil tersimpan di Google Sheet!";
+            fetchLeaderboard();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById('sending-status').style.display = 'none';
+            document.getElementById('final-details').innerText = "Gagal menyimpan nilai, namun kuis tetap selesai.";
+            fetchLeaderboard();
+        });
+    }
+
+    function fetchLeaderboard() {
+        fetch(WEB_APP_URL)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+            
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${index + 1}</b></td>
+                    <td>${item.nama}</td>
+                    <td>${item.kelas}</td>
+                    <td><b>${item.persentase}%</b> (${item.skor}/${item.total})</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(err => {
+            console.error("Error leaderboard:", err);
+            document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="4" style="text-align:center;">Gagal memuat leaderboard.</td></tr>';
+        });
+    }
+</script>
+
+</body>
+</html>
